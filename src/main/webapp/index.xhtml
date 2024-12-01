@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+    <title>Проверка попадания</title>
+</h:head>
+<h:body>
+    <h:form id="form">
+        <h2>Управление</h2>
+        <!--todo: обернуть каждый выбор переменной в h:panelGroup -->
+        <!-- Слайдер для X -->
+        <p:outputLabel for="x-slider" value="X:"/>
+        <p:slider id="x-slider" minValue="-4" maxValue="4" step="0.1"
+                  value="#{x_bean.x}" style="width: 300px"/>
+
+        <!-- Поле для ввода Y -->
+        <h:panelGroup styleClass="flex flex-col gap-2">
+            <h:outputLabel for="y-value" value="Y:" styleClass="block text-sm font-medium text-center"/>
+
+            <!-- Поле ввода Y с валидацией -->
+            <p:inputText id="y-value" value="#{y_bean.y}" placeholder="Введите значение от -5 до 3">
+                <!-- AJAX-обработчик, вызывающий серверный метод для проверки -->
+                <p:ajax event="keyup" listener="#{y_bean.validateY}" update="y-error submit-btn"/>
+            </p:inputText>
+
+            <!-- Сообщение об ошибке -->
+            <h:message id="y-error" for="y-value" styleClass="text-red-500 mt-2"/>
+        </h:panelGroup>
+
+        <!-- Слайдер для R -->
+        <p:outputLabel for="r-slider" value="R:"/>
+        <p:slider id="r-slider" minValue="1" maxValue="4" step="0.5"
+                  value="#{r_bean.r}" style="width: 300px">
+            <p:ajax listener="#{r_bean.validateRBeanValue}"/>
+        </p:slider>
+
+        <p:commandButton id="submit-btn" value="Отправить" action="#{main_bean.submit}" disabled="#{not y_bean.isYValid}"/>
+
+    </h:form>
+    <!-- Таблица результатов -->
+    <h3>Результаты:</h3>
+    <p:dataTable id="resultsTable" value="#{main_bean.results}" var="result" style="width: 100%">
+        <p:column headerText="X">
+            <h:outputText value="#{result.x}"/>
+        </p:column>
+        <p:column headerText="Y">
+            <h:outputText value="#{result.y}"/>
+        </p:column>
+        <p:column headerText="R">
+            <h:outputText value="#{result.r}"/>
+        </p:column>
+        <p:column headerText="Попадание">
+            <h:outputText value="#{result.isIn ? 'Да' : 'Нет'}"/>
+        </p:column>
+        <p:column headerText="Время выполнения (нс)">
+            <h:outputText value="#{result.executionTime}"/>
+        </p:column>
+        <p:column headerText="Время на сервере">
+            <h:outputText value="#{result.serverTime}"/>
+        </p:column>
+    </p:dataTable>
+</h:body>
+</html>

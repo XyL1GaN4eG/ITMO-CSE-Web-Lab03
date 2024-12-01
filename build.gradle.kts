@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("io.freefair.lombok") version "8.10"
+    id("war")
 }
 
 group = "web"
@@ -10,39 +11,33 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 dependencies {
-    implementation(fileTree(mapOf("dir" to "lib", "include" to listOf("*.jar"))))
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("javax:javaee-web-api:8.0.1")
+    implementation("javax.faces:jsf-api:2.1")
+    implementation("org.postgresql:postgresql:42.7.4")
+    implementation("org.primefaces:primefaces:12.0.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.projectlombok:lombok:1.18.36")
 }
 
 
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = "Main"
+
+tasks.withType<War> {
+    from("src/main/webapp") {
+        into("/")
     }
-    val dependencies = configurations
-        .runtimeClasspath
-        .get()
-        .map(::zipTree) // OR .map { zipTree(it) }
-    from(dependencies)
+    exclude("META-INF/*.xml")
+    exclude("META-INF/services/*")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.withType<JavaCompile> {
-    options.compilerArgs.addAll(arrayOf("--release", "17"))
-}
-
-tasks.compileJava{
-    options.encoding = "UTF-8"
-}
-
-tasks.javadoc {
-    options.encoding = "UTF-8"
-}
-
 tasks.create("deploy") {
-
-    dependsOn("jar")
+    dependsOn("war")
 
     doLast {
         exec {
