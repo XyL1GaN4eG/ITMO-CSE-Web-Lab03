@@ -1,4 +1,1 @@
-scp -r www itmo:~/web/lab01
-#scp -r build/libs/*.jar itmo:~/httpd-root/fcgi-bin
-scp -r build/libs/*.jar itmo:~/httpd-root/fcgi-bin
-scp httpd.conf itmo:~/httpd-root/conf
+scp build/libs/ITMO-CSE-Web-Lab03-1.0-SNAPSHOT.war itmo:~/web/lab03/wildfly-21.0.0.Final/standalone/deployments/
