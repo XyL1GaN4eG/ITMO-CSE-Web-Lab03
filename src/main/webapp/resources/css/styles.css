@@ -1,0 +1,177 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 800px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.header h1 {
+    font-size: 18px;
+    color: #555;
+}
+
+.graph {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+canvas {
+    border: 1px solid #ddd;
+    max-width: 100%;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.x-text, .y-text, .r-select {
+    margin-bottom: 15px;
+}
+
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.button-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.button, .clear-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover, .clear-button:hover {
+    background-color: #45a049;
+}
+
+.results-holder {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.results {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.res-header {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.res-row {
+    border-bottom: 1px solid #ddd;
+}
+
+.results td, .results th {
+    padding: 8px;
+    text-align: center;
+}
+
+.warning {
+    color: red;
+    font-size: 0.8em;
+}
+
+.h-link, .index-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.h-link:hover, .index-link:hover {
+    text-decoration: underline;
+}
+
+.clock-container {
+    text-align: center;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#clock {
+    font-size: 2em;
+    color: #333;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 16px;
+    }
+}
+
+/* Добавьте эти стили в существующий CSS файл */
+.x-text, .y-text, .r-select {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.x-text label, .y-text label, .r-select label {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.x-text .ui-slider,
+.y-text .ui-inputtext,
+.r-select .ui-slider {
+    width: 100%;
+    max-width: 300px;
+}
+
+.x-text .ui-inputtext,
+.y-text .ui-inputtext {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.r-select .ui-slider-handle {
+    cursor: pointer;
+}
+
+.r-select #output {
+    text-align: center;
+    margin-bottom: 10px;
+}

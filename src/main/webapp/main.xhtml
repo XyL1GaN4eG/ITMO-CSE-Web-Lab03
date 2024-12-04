@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+>
+<h:head>
+    <title>Main Page</title>
+    <h:outputStylesheet library="css" name="styles.css"/>
+
+</h:head>
+<h:body>
+    <div class="container">
+        <div class="header">
+            <h1>Жук Иван Александрович, группа P3215, вариант 76543</h1>
+        </div>
+
+        <div class="graph">
+            <canvas id="graphic" width="420px" height="420px"/>
+        </div>
+
+        <h:form styleClass="form" id="form">
+
+            <div class="x-text" >
+                <h:outputLabel styleClass="x-label" for="x">Выберите X: </h:outputLabel> <br/>
+
+                <h:panelGrid columns="1" >
+                    <p:inputText id="x" value="#{point.x}"/>
+                    <p:slider for="x" minValue="-4" maxValue="4" step="0.1" range="min"/>
+                </h:panelGrid>
+            </div>
+
+
+            <div class="y-text" >
+                <h:outputLabel styleClass="y-label" for="y">Выберите Y: </h:outputLabel> <br/>
+                <h:inputText id="y" value="#{point.y}" maxlength="12"
+                             validatorMessage="Введите корректное числовое значение Y в диапазоне (-5;3)."
+                             converterMessage="Введите корректное числовое значение Y в диапазоне (-5;3)."
+                             styleClass="y">
+                    <f:validateDoubleRange minimum="-4.99999999999999" maximum="2.99999999999999"/>
+                    <f:validateRequired/>
+                    <f:ajax event="keyup" render="y-warning" execute="y"/>
+                    <f:ajax render="y"/>
+                </h:inputText>
+                <p><h:message id="y-warning" styleClass="warning" for="y"/></p>
+            </div>
+
+
+            <div class="r-select">
+                <h:outputLabel styleClass="r-label" for="r">Выберите R: </h:outputLabel>
+                <h:panelGrid columns="1">
+                    <h:outputText id="output" value="Текущее значение R: #{point.r}"/>
+                    <h:inputHidden id="r" value="#{point.r}"/>
+                    <p:slider for="r"
+                              minValue="1"
+                              maxValue="4"
+                              step="0.5"
+                              range="min"
+                              display="output"
+                              displayTemplate="Текущее значение R: {value}">
+                        <p:ajax event="slideEnd"
+                                process="@this"
+                                onsuccess="changeR(document.getElementById('form:r').value)"
+                        />
+                    </p:slider>
+                </h:panelGrid>
+
+                <p><h:message id="r-warning" styleClass="warning" for="r"/></p>
+            </div>
+
+            <div class="button-wrap" id="submit-wrap">
+                <h:commandButton id="submit-button" value="Отправить" action="#{point.check}" styleClass="button">
+                    <f:ajax execute="@form" render="results-table" onevent="addDot()"/>
+                </h:commandButton>
+            </div>
+
+            <div class="button-wrap" id="clear-wrap">
+                <h:commandButton id="clear-button" value="Очистить таблицу" action="#{table.clear}"
+                                 styleClass="clear-button">
+                    <f:ajax render="results-table" onevent="clearDots(); change(2)"/>
+                </h:commandButton>
+            </div>
+
+            <p:remoteCommand name="setTimezone" action="#{timezoner.setTimezone}"/>
+            <p:remoteCommand name="addPoint" action="#{table.addPoint}"/>
+        </h:form>
+
+        <div class="results-holder">
+            <h:dataTable value="#{table.getResults()}" var="row" styleClass="results" headerClass="res-header"
+                         rowClasses="res-row" id="results-table">
+                <h:column>
+                    <f:facet name="header">X</f:facet>
+                    <h:outputText value="#{row.x}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Y</f:facet>
+                    <h:outputText value="#{row.y}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">R</f:facet>
+                    <h:outputText value="#{row.r}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Результат</f:facet>
+                    <h:outputText value="Попадание" style="color: green;" rendered="#{row.hit}"/>
+                    <h:outputText value="Промах" style="color: red;" rendered="#{!row.hit}"/>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Время попытки</f:facet>
+                    <h:outputText value="#{row.attemptTime}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="#{timezoner.timezone}"/>
+                    </h:outputText>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Время выполнения</f:facet>
+                    <h:outputText value="#{row.executionTime}"/>
+                </h:column>
+            </h:dataTable>
+        </div>
+
+        <h:link outcome="goToIndex" styleClass="h-link">
+            Начальная страница
+        </h:link>
+    </div>
+
+    <h:outputScript library="js" name="plot.js"/>
+    <h:outputScript library="js" name="rbuttons-handler.js"/>
+    <script type="text/javascript">
+        provideInteractiveGraphics();
+        setTimezone([{name: "timezone", value: Intl.DateTimeFormat().resolvedOptions().timeZone}]);
+        let x = JSON.parse('#{table.x}');
+        let y = JSON.parse('#{table.y}');
+        let r = JSON.parse('#{table.r}');
+        let hit = JSON.parse('#{table.hit}');
+        saveDots(x, y, r, hit)
+        changeR(document.getElementById('form:r').value);
+    </script>
+
+</h:body>
+</html>

@@ -20,9 +20,11 @@ dependencies {
     implementation("javax:javaee-web-api:8.0.1")
     implementation("javax.faces:jsf-api:2.1")
     implementation("org.postgresql:postgresql:42.7.4")
-    implementation("org.primefaces:primefaces:12.0.0")
+    implementation("org.primefaces:primefaces:13.0.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.projectlombok:lombok:1.18.36")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("org.slf4j:slf4j-api:1.7.36")
 }
 
 
