@@ -71,9 +71,14 @@
 
             <div class="button-wrap" id="submit-wrap">
                 <h:commandButton id="submit-button" value="Отправить" action="#{point.check}" styleClass="button">
-                    <f:ajax execute="@form" render="results-table" onevent="addDot()"/>
+                    <f:ajax execute="@form" render="@form results-table graph" onevent="addDot()"/>
                 </h:commandButton>
             </div>
+
+<!--            <h:commandButton styleClass="check-button" id="checkButton" value="Проверить" onclick="buttonClick(event)">-->
+<!--                <f:ajax execute="@form" listener="#{pointBean.check}" render="@form results-table lastPoint graph svg"-->
+<!--                        onevent="updateGraph"/>-->
+<!--            </h:commandButton>-->
 
             <div class="button-wrap" id="clear-wrap">
                 <h:commandButton id="clear-button" value="Очистить таблицу" action="#{table.clear}"

@@ -29,6 +29,10 @@ public class ResultTable implements Serializable {
         results = dbManager.getDataFromTable();
     }
 
+    public Point getLastResult() {
+        return results.get(results.size() - 1);
+    }
+
     public void addPoint(Point row) {
         dbManager.addPoint(row);
         try {
