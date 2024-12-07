@@ -19,6 +19,7 @@ java {
 dependencies {
     implementation("javax:javaee-web-api:8.0.1")
     implementation("javax.faces:jsf-api:2.1")
+    implementation("javax.servlet:javax.servlet-api:4.0.1")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("org.primefaces:primefaces:13.0.0")
     implementation("com.google.code.gson:gson:2.10.1")

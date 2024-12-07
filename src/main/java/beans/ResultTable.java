@@ -22,6 +22,10 @@ public class ResultTable implements Serializable {
     private DatabaseManager dbManager;
     private final Lock lock = new ReentrantLock();
 
+    public ResultTable() {
+
+    }
+
     @PostConstruct
     public void init() throws SQLException, IOException {
         dbManager = new DatabaseManager();
@@ -30,6 +34,10 @@ public class ResultTable implements Serializable {
     }
 
     public Point getLastResult() {
+        if (results == null || results.isEmpty()) {
+            // Возвращаем null или создаем пустой объект Point по умолчанию
+            return null; // Или new Point(0, 0, 0, false, null, 0);
+        }
         return results.get(results.size() - 1);
     }
 

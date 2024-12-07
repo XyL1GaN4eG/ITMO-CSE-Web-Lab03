@@ -6,6 +6,7 @@ const topEdge = 10;
 const max = 420;
 const l = (bottomEdge - topEdge) / 6;
 const mainColor = '#007BFF';
+const pointsByR = {}
 let xList = [];
 let yList = [];
 let rList = [];
@@ -89,33 +90,45 @@ function offset(el) {
     return {top: rect.top + scrollTop, left: rect.left + scrollLeft}
 }
 
+function validateX(x) {
+    if (x > 3) {
+        x = 3;
+    }
+    if (x < -3) {
+        x = -2.99999;
+    }
+    return x;
+}
+
+function validateY(y) {
+    if (y > 3) {
+        y = 3;
+    }
+    if (y < -5) {
+        y = -5;
+    }
+    return y;
+}
+
 function provideInteractiveGraphics() {
     const canvas = document.getElementById("graphic");
-    canvas.addEventListener("click", function (e) {
-        console.log("provideInteractiveGraphics")
-        console.log(e.clientX, e.clientY)
-        let offsetValues = offset(canvas);
-        let x = (e.offsetX - center) / l;
-        let y = -(e.offsetY - center) / l;
+    let isFirstEnter = false
+    canvas.addEventListener("click", async function (e) {
+        console.log("looool")
+        if (!isFirstEnter) {
+            console.log("provideInteractiveGraphics")
+            console.log(e.clientX, e.clientY)
+            let x = (e.offsetX - center) / l;
+            let y = -(e.offsetY - center) / l;
+            let r = document.getElementById('form:r').value
 
-
-        console.log(x, y)
-        if (x >= 3) {
-            x = 3;
+            console.log(x, y)
+            x = validateX(x)
+            y = validateY(y)
+            let responseData = await sendData(x, y, r)
+            addRowToTable(responseData)
         }
-        if (x <= -3) {
-            x = -2.99999;
-        }
-        if (y > 3) {
-            y = 3;
-        }
-        if (y < -5) {
-            y = -5;
-        }
-
-        document.getElementById('form:x').value = x;
-        document.getElementById('form:y').value = y;
-        document.getElementById("form:submit-button").click();
+        isFirstEnter = true;
     });
 }
 
@@ -136,24 +149,20 @@ function clearDots() {
     }
 }
 
-function drawArrow(context, fromx, fromy, tox, toy) {
-    const headlen = 10;
-    const dx = tox - fromx;
-    const dy = toy - fromy;
+function drawArrow(context, fromX, fromY, tox, toy) {
+    const headLen = 10;
+    const dx = tox - fromX;
+    const dy = toy - fromY;
     const angle = Math.atan2(dy, dx);
-    context.moveTo(fromx, fromy);
+    context.moveTo(fromX, fromY);
     context.lineTo(tox, toy);
-    context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+    context.lineTo(tox - headLen * Math.cos(angle - Math.PI / 6), toy - headLen * Math.sin(angle - Math.PI / 6));
     context.moveTo(tox, toy);
-    context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+    context.lineTo(tox - headLen * Math.cos(angle + Math.PI / 6), toy - headLen * Math.sin(angle + Math.PI / 6));
     context.stroke();
 }
 
-function addDot() {
-    let r = document.getElementById('form:r').value;
-    let y = document.getElementById('form:y').value;
-    let x = document.getElementById('form:x').value;
-
+function addDot(x, y, r) {
     let hit =
         //rectangle
         ((x >= -r) && (x <= 0) && (y >= -r / 2) && (y <= 0)) ||
@@ -168,5 +177,49 @@ function addDot() {
     let i = xList.length - 1
     drawDot(center + (xList[i] / rList[i]) * r * l, center - (yList[i] / rList[i]) * r * l,
         hitList[i] ? '#0F0' : '#F00');
+}
+
+function addRowToTable(rowData) {
+    var table = document.getElementById('results-table');
+    console.log(table)
+    const row = document.createElement("tr");
+    Object.values(rowData).forEach(cellData => {
+        const cell = document.createElement("td");
+        cell.textContent = cellData;
+        row.appendChild(cell);
+    });
+    table.appendChild(row);
+}
+
+async function sendData(x, y, r) {
+    r = "1.0"; // Устанавливаем значение по умолчанию для R
+
+    // Создаем объект с нужной структурой
+    let obj = {
+        x_array: x,
+        y: y,
+        r: r
+    };
+
+    console.log(JSON.stringify(obj))
+
+    let response = await fetch("/lab02-1.0-SNAPSHOT/controller", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(obj) // Отправляем сформированный JSON
+    });
+
+    let responseData = await response.json();
+    const point = {
+        x: responseData.x,
+        y: responseData.y,
+        isIn: responseData.isIn
+    };
+
+    xList.push(point.x)
+    yList.push(point.y)
+    rList.push(point.r)
+    addDot(point.x, point.y, point.r)
+    return responseData;
 
 }
