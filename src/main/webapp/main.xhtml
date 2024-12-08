@@ -73,9 +73,9 @@
             </div>
 
             <div class="button-wrap" id="submit-wrap">
-                <h:commandButton id="submit-button" value="Отправить" action="#{point.check}" styleClass="button">
+                <h:commandButton id="submit-button" value="Отправить" action="#{point.checkUnhidden}" styleClass="button">
                     <f:ajax execute="@form" render="@form results-table graph" onevent="
-                    addDot();
+                    addDot(#{table.getLastResult()});
                     #{table.getLastResult()}.forEach(rowData => addRowToTable(rowData))
 "/>
                 </h:commandButton>
@@ -93,12 +93,11 @@
         </h:form>
 
         <h:form id="graphForm">
-            <h:inputHidden id="hiddenX" value="#{point.x}" />
-            <h:inputHidden id="hiddenY" value="#{point.y}" />
-            <h:inputHidden id="hiddenR" value="#{point.r}" />
-            <h:commandButton id="hiddenSubmitButton" action="#{point.check}" style="display:none;">
+            <h:inputHidden id="hiddenX" value="#{point.hiddenX}"/>
+            <h:inputHidden id="hiddenY" value="#{point.hiddenY}"/>
+            <h:inputHidden id="hiddenR" value="#{point.r}"/>
+            <h:commandButton id="hiddenSubmitButton" action="#{point.hiddenCheck}" style="display:none;">
                 <f:ajax execute="@form" render="@form results-table graph" onevent="
-                    console.log(99999999999999999999);
                     addDot();
                     #{table.getLastResult()}.forEach(rowData => addRowToTable(rowData))
 "/>
@@ -149,6 +148,11 @@
         window.history.replaceState(null, null, window.location.href);
         provideInteractiveGraphics();
         setTimezone([{name: "timezone", value: Intl.DateTimeFormat().resolvedOptions().timeZone}]);
+        let point = {
+            x: JSON.parse('#{table.x}'),
+            y: JSON.parse('#{table.y}'),
+            hit: JSON.parse('#{table.hit}')
+        }
         let x = JSON.parse('#{table.x}');
         let y = JSON.parse('#{table.y}');
         let r = JSON.parse('#{table.r}');

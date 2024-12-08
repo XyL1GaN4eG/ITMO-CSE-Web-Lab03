@@ -6,11 +6,7 @@ const topEdge = 10;
 const max = 420;
 const l = (bottomEdge - topEdge) / 6;
 const mainColor = '#007BFF';
-const pointsByR = {}
-let xList = [];
-let yList = [];
-let rList = [];
-let hitList = [];
+let pointsByR = {}
 
 function drawGraph(r) {
     const canvas = document.getElementById("graphic");
@@ -69,22 +65,39 @@ function drawDot(x, y, color) {
     context.fill();
 }
 
-function drawAllDots(r) {
-    for (let i = 0; i < xList.length; i++) {
-        drawDot(center + (xList[i] / rList[i]) * r * l, center - (yList[i] / rList[i]) * r * l,
-            hitList[i] ? '#0F0' : '#F00');
+function drawAllDots() {
+
+    let r = Number(document.getElementById('form:r').value);
+
+    if (!pointsByR[r]) {
+        pointsByR[r] = [];
     }
+
+    console.log("попытка нарисовать рки для следующего массива: ", pointsByR[r])
+    console.log("r = ", r)
+    pointsByR[r].forEach(point => {
+        drawDot(center + (point.x / r) * r * l, center - (point.y / r) * r * l,
+            point.hit ? '#0F0' : '#F00');
+    })
 }
 
 function saveDots(x, y, r, hit) {
-    xList = x;
-    yList = y;
-    rList = r;
-    hitList = hit;
+    for (let i = 0; i <= x.length - 1; i++) {
+        let point = {
+            x: x[i],
+            y: y[i],
+            hit: hit[i]
+        };
+        if (!pointsByR[r[i]]) {
+            pointsByR[r[i]] = [];
+        }
+        pointsByR[r[i]].push(point)
+    }
+    console.log("полученные рки: ", pointsByR)
 }
 
 function offset(el) {
-    var rect = el.getBoundingClientRect(),
+    const rect = el.getBoundingClientRect(),
         scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
         scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     return {top: rect.top + scrollTop, left: rect.left + scrollLeft}
@@ -112,14 +125,13 @@ function validateY(y) {
 
 function provideInteractiveGraphics() {
     const canvas = document.getElementById("graphic");
-    let isFirstEnter = false
     canvas.addEventListener("click", function (e) {
-        console.log("looool")
-        console.log("provideInteractiveGraphics")
-        console.log(e.clientX, e.clientY)
         let x = (e.offsetX - center) / l;
         let y = -(e.offsetY - center) / l;
-        let r = document.getElementById('form:r').value
+        let r = document.getElementById('form:r').value;
+        if (!pointsByR[r]) {
+            pointsByR[r] = [];
+        }
         document.getElementById('graphForm:hiddenX').value = x;
         document.getElementById('graphForm:hiddenY').value = y;
         document.getElementById('graphForm:hiddenR').value = r;
@@ -131,10 +143,7 @@ function clearDots() {
     const canvas = document.getElementById("graphic");
     const context = canvas.getContext('2d');
     context.clearRect(0, 0, max, max);
-    xList = [];
-    yList = [];
-    rList = [];
-    hitList = [];
+    pointsByR = null;
     let currentR = document.getElementById('form:r').value;
 
     if (currentR != null && currentR !== 0) {
@@ -157,26 +166,35 @@ function drawArrow(context, fromX, fromY, tox, toy) {
     context.stroke();
 }
 
-function addDot(x, y, r) {
-    let hit =
-        //rectangle
-        ((x >= -r) && (x <= 0) && (y >= -r / 2) && (y <= 0)) ||
-        //triangle
-        ((x >= 0) && (x <= r / 2) && (y >= -r) && (y <= 0) && (x * 2 - r <= y)) ||
-        //half-half-circle
-        ((x * x + y * y <= r * r) && (x >= 0) && (y >= 0))
-    xList.push(x);
-    yList.push(y);
-    rList.push(r);
-    hitList.push(hit);
-    let i = xList.length - 1
-    drawDot(center + (xList[i] / rList[i]) * r * l, center - (yList[i] / rList[i]) * r * l,
-        hitList[i] ? '#0F0' : '#F00');
+function addDot(data) {
+
+    const x = data.x;
+    const y = data.y;
+    const r = data.r;
+    const hit = data.hit;
+
+    let point = {
+        x: x,
+        y: y,
+        hit: hit
+    };
+
+    if (!pointsByR[r]) {
+        pointsByR[r] = [];
+    }
+
+    pointsByR[r].push(point)
+    let curR = document.getElementById('form:r').value;
+    let pointsBCurrentR = pointsByR[curR]
+
+
+    let i = pointsBCurrentR.size - 1;
+    drawDot(center + (pointsBCurrentR.x[i] / pointsBCurrentR.r[i]) * r * l, center - (pointsBCurrentR.y[i] / pointsBCurrentR.y[i]) * r * l,
+        pointsBCurrentR.hit[i] ? '#0F0' : '#F00');
 }
 
 function addRowToTable(rowData) {
     var table = document.getElementById('results-table');
-    console.log(table)
     const row = document.createElement("tr");
     Object.values(rowData).forEach(cellData => {
         const cell = document.createElement("td");
