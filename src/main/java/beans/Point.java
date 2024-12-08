@@ -18,7 +18,6 @@ public class Point implements Serializable {
     private double x;
     private double y;
     private double r = 2;
-    private double hiddenR;
     private boolean hit;
     private long attemptTime;
     private double executionTime;

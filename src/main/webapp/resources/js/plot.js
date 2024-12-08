@@ -113,22 +113,17 @@ function validateY(y) {
 function provideInteractiveGraphics() {
     const canvas = document.getElementById("graphic");
     let isFirstEnter = false
-    canvas.addEventListener("click", async function (e) {
+    canvas.addEventListener("click", function (e) {
         console.log("looool")
-        if (!isFirstEnter) {
-            console.log("provideInteractiveGraphics")
-            console.log(e.clientX, e.clientY)
-            let x = (e.offsetX - center) / l;
-            let y = -(e.offsetY - center) / l;
-            let r = document.getElementById('form:r').value
-
-            console.log(x, y)
-            x = validateX(x)
-            y = validateY(y)
-            let responseData = await sendData(x, y, r)
-            addRowToTable(responseData)
-        }
-        isFirstEnter = true;
+        console.log("provideInteractiveGraphics")
+        console.log(e.clientX, e.clientY)
+        let x = (e.offsetX - center) / l;
+        let y = -(e.offsetY - center) / l;
+        let r = document.getElementById('form:r').value
+        document.getElementById('graphForm:hiddenX').value = x;
+        document.getElementById('graphForm:hiddenY').value = y;
+        document.getElementById('graphForm:hiddenR').value = r;
+        document.getElementById("graphForm:hiddenSubmitButton").click();
     });
 }
 
@@ -189,37 +184,4 @@ function addRowToTable(rowData) {
         row.appendChild(cell);
     });
     table.appendChild(row);
-}
-
-async function sendData(x, y, r) {
-    r = "1.0"; // Устанавливаем значение по умолчанию для R
-
-    // Создаем объект с нужной структурой
-    let obj = {
-        x_array: x,
-        y: y,
-        r: r
-    };
-
-    console.log(JSON.stringify(obj))
-
-    let response = await fetch("/lab02-1.0-SNAPSHOT/controller", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(obj) // Отправляем сформированный JSON
-    });
-
-    let responseData = await response.json();
-    const point = {
-        x: responseData.x,
-        y: responseData.y,
-        isIn: responseData.isIn
-    };
-
-    xList.push(point.x)
-    yList.push(point.y)
-    rList.push(point.r)
-    addDot(point.x, point.y, point.r)
-    return responseData;
-
 }

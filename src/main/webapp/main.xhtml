@@ -92,6 +92,19 @@
             <p:remoteCommand name="addPoint" action="#{table.addPoint}"/>
         </h:form>
 
+        <h:form id="graphForm">
+            <h:inputHidden id="hiddenX" value="#{point.x}" />
+            <h:inputHidden id="hiddenY" value="#{point.y}" />
+            <h:inputHidden id="hiddenR" value="#{point.r}" />
+            <h:commandButton id="hiddenSubmitButton" action="#{point.check}" style="display:none;">
+                <f:ajax execute="@form" render="@form results-table graph" onevent="
+                    console.log(99999999999999999999);
+                    addDot();
+                    #{table.getLastResult()}.forEach(rowData => addRowToTable(rowData))
+"/>
+            </h:commandButton>
+        </h:form>
+
         <div class="results-holder">
             <h:dataTable value="#{table.getResults()}" var="row" styleClass="results" headerClass="res-header"
                          rowClasses="res-row" id="results-table">
